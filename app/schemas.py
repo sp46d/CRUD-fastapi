@@ -26,8 +26,10 @@ class Post(PostBase):
     
     id: int
     created_at: datetime
+    likes: int
     owner_id: int
     owner: UserOut
+    
     
         
 class UserCreate(BaseModel):
