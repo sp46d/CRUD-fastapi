@@ -30,9 +30,8 @@ class User(Base):
     
 class Vote(Base):
     __tablename__ = "votes"
-    post_user_id = Column(Integer, primary_key=True, nullable=False)
-    post_id = Column(Integer, nullable=False)
-    user_id = Column(Integer, nullable=False)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, primary_key=True)
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=False, server_default=text('now()'))
     
