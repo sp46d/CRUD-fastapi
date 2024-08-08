@@ -32,4 +32,4 @@ class Vote(Base):
     
     post_id = mapped_column(Integer, ForeignKey('posts.id', ondelete='CASCADE'), primary_key=True)
     user_id = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
