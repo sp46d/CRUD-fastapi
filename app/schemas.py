@@ -27,7 +27,6 @@ class Post(PostBase):
     
     id: int
     created_at: datetime
-    likes: int
     owner_id: int
     owner: UserOut
     
@@ -56,3 +55,9 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: Literal[0, 1]
+    
+# class VoteOut(BaseModel):
+#     model_config = ConfigDict(from_attributes=True)
+    
+#     post_id: int
+#     votes: int

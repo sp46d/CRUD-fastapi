@@ -40,3 +40,16 @@ def vote(vote: schemas.Vote,
         db.commit()
         
         return {"message": "vote is successfully deleted"}
+    
+    
+# @router.get("/{id}", response_model=schemas.VoteOut)
+# def get_votes(id: int,
+#               db: Session = Depends(get_db),
+#               current_user: schemas.UserOut = Depends(oauth2.get_current_user)):
+    
+#     query = db.query(models.Post, models.Vote)\
+#         .outerjoin(models.Vote, models.Post.id == models.Vote.post_id)\
+#         .group_by(models.Post.id).count()
+        
+        
+        
