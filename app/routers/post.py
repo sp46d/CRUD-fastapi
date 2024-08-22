@@ -27,9 +27,10 @@ def get_posts(current_user: schemas.UserOut = Depends(oauth2.get_current_user),
     
     with SessionLocal() as session:
         vote_count = func.count(models.Vote.post_id).label("votes")
-        q = (select(models.Post, vote_count)
-             .join(models.Post.votes, isouter=True)             
-             .group_by(models.Post))
+        q = (select(models.Post, models.User, vote_count)
+             .join(models.Post.votes, isouter=True)
+             .join(models.Post.owner)
+             .group_by(models.Post, models.User))
         posts = session.execute(q).mappings().all()
     return posts
             
