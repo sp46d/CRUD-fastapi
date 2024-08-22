@@ -12,7 +12,7 @@ router = APIRouter(
 def vote(vote: schemas.Vote,
          current_user: schemas.UserOut = Depends(oauth2.get_current_user)):
 
-    with SessionLocal.begin() as session:
+    with SessionLocal() as session:
         post = session.get(models.Post, vote.post_id)
         if not post:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -29,6 +29,7 @@ def vote(vote: schemas.Vote,
                                     detail=f"user {current_user.id} already voted on post {vote.post_id}")
             new_vote = models.Vote(post_id=vote.post_id, user_id=current_user.id)
             session.add(new_vote)
+            session.commit()
 
             return {"message": "vote is successfully added"}
             
@@ -37,6 +38,7 @@ def vote(vote: schemas.Vote,
                 raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                                     detail=f"user {current_user.id} did not vote on post {vote.post_id}, so cannot unvote post {vote.post_id}")
             session.delete(found_vote)
+            session.commit()
             
             return {"message": "vote is successfully deleted"}
     

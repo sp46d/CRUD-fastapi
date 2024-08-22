@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException, Depends, APIRouter, Response
 from typing import Optional
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from .. import models, schemas, oauth2
 from ..database import SessionLocal
 
@@ -18,13 +18,19 @@ def get_posts(current_user: schemas.UserOut = Depends(oauth2.get_current_user),
               skip: int = 0,
               search: Optional[str]= ""):
     
+    # with SessionLocal() as session:
+    #     posts = session.scalars(
+    #         select(models.Post)
+    #         .where(models.Post.title.ilike(f'%{search}%'))
+    #         .offset(skip)
+    #         .limit(limit)).all()
+    
     with SessionLocal() as session:
-        posts = session.scalars(
-            select(models.Post)
-            .where(models.Post.title.ilike(f'%{search}%'))
-            .offset(skip)
-            .limit(limit)).all()
-
+        vote_count = func.count(models.Vote.post_id).label("votes")
+        q = (select(models.Post, vote_count)
+             .join(models.Post.votes, isouter=True)             
+             .group_by(models.Post))
+        posts = session.execute(q).mappings().all()
     return posts
             
     # posts = db.query(models.Post).all()
