@@ -8,15 +8,15 @@ class Base(DeclarativeBase):
 
 
 engine = create_engine(settings.db_url)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(bind=engine)
 
 # TODO: start the session with a context manager, instead of the function below
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
         
         
 # while True:

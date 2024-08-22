@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Integer, String, ForeignKey, func, DateTime
+from sqlalchemy import ForeignKey, func, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from typing import List
 from .database import Base
@@ -12,7 +12,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    
     posts: Mapped[List['Post']] = relationship(back_populates='owner')
+    votes: Mapped[List['Vote']] = relationship(back_populates='user')
 
 
 class Post(Base):
@@ -23,13 +25,18 @@ class Post(Base):
     content: Mapped[str]
     published: Mapped[bool] = mapped_column(server_default='true')
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    owner_id = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
-    owner: Mapped[User] = relationship(back_populates='posts')
+    owner_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    
+    owner: Mapped['User'] = relationship(lazy='joined', back_populates='posts')
+    votes: Mapped[List['Vote']] = relationship(back_populates='post')
 
     
 class Vote(Base):
     __tablename__ = "votes"
     
-    post_id = mapped_column(Integer, ForeignKey('posts.id', ondelete='CASCADE'), primary_key=True)
-    user_id = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    post_id: Mapped[int] = mapped_column(ForeignKey('posts.id', ondelete='CASCADE'), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
+    # created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    
+    post: Mapped['Post'] = relationship(back_populates='votes')
+    user: Mapped['User'] = relationship(back_populates='votes')
