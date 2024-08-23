@@ -30,7 +30,13 @@ class Post(PostBase):
     owner_id: int
     owner: UserOut
     
+
+class PostOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     
+    post: Post
+    vote: int   
+
         
 class UserCreate(BaseModel):
     email: EmailStr
@@ -49,15 +55,9 @@ class Token(BaseModel):
     
 
 class TokenData(BaseModel):
-    id: Optional[int] = None
+    id: int | None = None
     
 
 class Vote(BaseModel):
     post_id: int
     dir: Literal[0, 1]
-    
-# class VoteOut(BaseModel):
-#     model_config = ConfigDict(from_attributes=True)
-    
-#     post_id: int
-#     votes: int

@@ -1,5 +1,5 @@
 from fastapi import status, HTTPException, Depends, APIRouter, Response
-from typing import Optional
+from typing import Optional, Any
 from sqlalchemy import select, update, func
 from .. import models, schemas, oauth2
 from ..database import SessionLocal
@@ -11,28 +11,26 @@ router = APIRouter(
     tags=["Posts"]
 )
 
-# @router.get('/', response_model=List[schemas.Post])
-@router.get('/')
+@router.get('/', response_model=list[schemas.PostOut])
 def get_posts(current_user: schemas.UserOut = Depends(oauth2.get_current_user),
               limit: int = 10,
               skip: int = 0,
               search: Optional[str]= ""):
     
-    # with SessionLocal() as session:
-    #     posts = session.scalars(
-    #         select(models.Post)
-    #         .where(models.Post.title.ilike(f'%{search}%'))
-    #         .offset(skip)
-    #         .limit(limit)).all()
-    
     with SessionLocal() as session:
         vote_count = func.count(models.Vote.post_id).label("votes")
-        q = (select(models.Post, models.User, vote_count)
+        q = (select(models.Post, vote_count)
              .join(models.Post.votes, isouter=True)
-             .join(models.Post.owner)
-             .group_by(models.Post, models.User))
-        posts = session.execute(q).mappings().all()
-    return posts
+             .group_by(models.Post)
+             .having(models.Post.title.ilike(f'%{search}%'))
+             .offset(skip)
+             .limit(limit))
+        posts = session.execute(q).all()
+        data: list[dict[str, Any]] = []
+        for post in posts:
+            data.append({'post': post[0], 'vote': post[1]})
+    
+    return data
             
     # posts = db.query(models.Post).all()
     # result = db.query(models.Post, func.count(models.Vote.post_id).label("votes"))\
