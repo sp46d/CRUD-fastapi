@@ -28,7 +28,7 @@ def get_posts(current_user: schemas.UserOut = Depends(oauth2.get_current_user),
         posts = session.execute(q).all()
         data: list[dict[str, Any]] = []
         for post in posts:
-            data.append({'post': post[0], 'vote': post[1]})
+            data.append({'post': post[0], 'votes': post[1]})
     
     return data
             
@@ -55,18 +55,23 @@ def create_posts(post: schemas.PostCreate,
     return new_post
 
 
-@router.get("/{id}", response_model=schemas.Post)
+@router.get("/{id}", response_model=schemas.PostOut)
 def get_post(id: int, 
              current_user: schemas.UserOut = Depends(oauth2.get_current_user)):
     
     with SessionLocal() as session:
-        post = session.get(models.Post, id)
+        vote_count = func.count(models.Vote.post_id).label("votes")
+        q = (select(models.Post, vote_count)
+                .join(models.Post.votes, isouter=True)
+                .where(models.Post.id == id)
+                .group_by(models.Post))
+        post = session.execute(q).first()
+    
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with id: {id} was not found")
 
-        if not post:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f"post with id: {id} was not found")
-
-    return post
+    return {'post': post[0], 'votes': post[1]}
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

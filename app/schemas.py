@@ -35,7 +35,7 @@ class PostOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     post: Post
-    vote: int   
+    votes: int   
 
         
 class UserCreate(BaseModel):
