@@ -10,7 +10,7 @@ class Base(DeclarativeBase):
 engine = create_engine(settings.db_url)
 SessionLocal = sessionmaker(bind=engine)
 
-# TODO: start the session with a context manager, instead of the function below
+# DONE: start the session with a context manager, instead of the function below
 # def get_db():
 #     db = SessionLocal()
 #     try:
