@@ -1,11 +1,10 @@
-import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-DOTENV = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv()
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=DOTENV, env_file_encoding="utf-8")
     
     db_username: str
     db_password: str
