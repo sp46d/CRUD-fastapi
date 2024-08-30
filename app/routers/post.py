@@ -1,8 +1,8 @@
 from fastapi import status, HTTPException, Depends, APIRouter, Response
 from typing import Optional, Any
 from sqlalchemy import select, update, func
-from .. import models, schemas, oauth2
-from ..database import SessionLocal
+from app import models, schemas, oauth2
+from app.database import SessionLocal
 
 
 

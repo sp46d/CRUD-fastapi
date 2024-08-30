@@ -1,10 +1,10 @@
 import jwt
 from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
-from . import schemas, database, models
+from app import schemas, database, models
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from .config import settings
+from app.config import settings
 from typing import Any
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')

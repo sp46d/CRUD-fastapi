@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException, APIRouter
-from .. import schemas, models, utils
-from ..database import SessionLocal
+from app import schemas, models, utils
+from app.database import SessionLocal
 
 router = APIRouter(
     prefix="/users",

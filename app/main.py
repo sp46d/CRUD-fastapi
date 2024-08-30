@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 # from . import models
 # from .database import engine
-from .routers import post, user, auth, vote
+from app.routers import post, user, auth, vote
 from fastapi.middleware.cors import CORSMiddleware
 
 # models.Base.metadata.drop_all(bind=engine)
